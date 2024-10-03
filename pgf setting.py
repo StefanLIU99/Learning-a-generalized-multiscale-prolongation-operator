@@ -33,9 +33,9 @@ mpl.rcParams.update({
     "font.serif": [],             
     "pgf.rcfonts": False,         
 })
-text_width = 5.3
+text_width = 5.1
 fig_width = text_width 
-fig_height = text_width / 2.6
+fig_height = 
 dpi = 1000
 
 mpl.rcParams['font.family'] = 'serif'
