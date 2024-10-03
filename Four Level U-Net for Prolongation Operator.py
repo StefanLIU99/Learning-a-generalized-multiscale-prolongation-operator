@@ -249,8 +249,7 @@ for file_path, label_path in zip(file_paths, label_paths):
 
 
     # save model and loss data
-    base_name = os.path.basename(file_path)
-    save_file_name = base_name.replace('dataset', 'models')
+    save_file_name = 
     save_dir = os.path.join(os.path.expanduser("~"), "Desktop", save_file_name)
     if not os.path.exists(save_dir):
         os.makedirs(save_dir)
