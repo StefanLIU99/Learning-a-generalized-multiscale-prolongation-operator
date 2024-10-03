@@ -233,6 +233,9 @@ class gmsfem_preconditioner:
     def get_preconditioner_LO(self):
         return LinearOperator(self.A_mat.shape, matvec=self.apply_preconditioner)
 
+N = 
+file_path = os.path.expanduser('')
+
 def load_kappa_data(file_path):
     data = np.load(file_path) 
     first_key = data.files[0]
@@ -241,31 +244,10 @@ def load_kappa_data(file_path):
         raise ValueError(f"wrong: {kappas.shape}")
     return np.flip(kappas[0], axis=0)
 
-N = 512
-file_path = os.path.expanduser('~/Desktop/Data_set_64x/dataset(whole kappa).npz')
-# file_path = os.path.expanduser('~/Desktop/Data set(Random Ball)/dataset(whole kappa 10000x).npz')
-# file_path = os.path.expanduser('~/Desktop/Data set(Random Ball)/dataset(whole kappa 1000x).npz')
-# file_path = os.path.expanduser('~/Desktop/Data set(Random Ball)/dataset(whole kappa 100x).npz')
-# file_path = os.path.expanduser('~/Desktop/Data set(Random Ball)/dataset(whole kappa 10x).npz')
-# file_path = os.path.expanduser('~/Desktop/Data set(Random Ball)/dataset(whole kappa 01x).npz')
-# file_path = os.path.expanduser('~/Desktop/Data set(Random Ball)/dataset(whole kappa 001x).npz')
-# file_path = os.path.expanduser('~/Desktop/Data set(Random Ball)/dataset(whole kappa 0001x).npz')
-# file_path = os.path.expanduser('~/Desktop/Data set(Random Ball)/dataset(whole kappa 00001x).npz')
-
-# kappa = np.ones((N, N))
-
 kappa = load_kappa_data(file_path)
 
-precond_ctx = gmsfem_preconditioner(kappa, partition=16)
-precond_ctx.gmsfem_coarse_space(eigen_num=5)
-
-# Construct the preconditioner.
-
-# M = LinearOperator(precond_ctx.A_mat.shape, matvec=precond_ctx.apply_preconditioner)
-
-
-
-# RHS vector.
+precond_ctx = gmsfem_preconditioner(kappa, partition=)
+precond_ctx.gmsfem_coarse_space(eigen_num=)
 
 b_vec = np.zeros((N, N))
 b_vec[0, 0] = 1
@@ -274,13 +256,8 @@ b_vec[0, -1] = -1
 b_vec[-1, 0] = -1
 b_vec = b_vec.flatten()
 
-iter = 0
-# M = precond_ctx.get_preconditioner_LO()
-# x, info = cg(precond_ctx.A_mat, b_vec, maxiter=1000, callback=precond_ctx.iter_callback )
-
 residuals = []
 iter_count = 0
-
 def iter_callback(Xi):
     global iter_count
     residual = np.linalg.norm(b_vec - precond_ctx.A_mat @ Xi)
