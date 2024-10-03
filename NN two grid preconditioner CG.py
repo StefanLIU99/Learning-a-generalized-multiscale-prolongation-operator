@@ -265,50 +265,50 @@ class gmsfem_preconditioner:
             model.load_state_dict(torch.load(model_path, map_location=device))
             model.eval()
 #            original_size = sub_kappa.shape[0]  
-#            new_size = original_size * 4
+#            new_size = original_size * _
 #            expanded = np.zeros((new_size, new_size), dtype=sub_kappa.dtype)
 #            for i in range(original_size):
 #                for j in range(original_size):
-#                    expanded[4*i:4*i+4, 4*j:4*j+2] = sub_kappa[i, j]
+#                    expanded[_*i:_*i+_, _*j:_*j+_] = sub_kappa[i, j]
 #            sub_kappa_copy = expanded.copy()
             input_tensor = torch.from_numpy(sub_kappa).unsqueeze(0).unsqueeze(0).float().to(device)
             with torch.no_grad():
                 output = model(input_tensor)
             output = output.squeeze(0)
             output_np = output.cpu().numpy()
-#            x_0 = np.ones((64,1))
+#            x_0 = np.ones((original_size * original_size,1))
 #            original_size = output_np[0].shape[0]
-#            new_size = original_size // 4
+#            new_size = original_size // _
 #            reduced = np.zeros((new_size, new_size), dtype=float)
 #            for i in range(new_size):
 #                for j in range(new_size):
-#                    block = output_np[0][4*i:4*i+4, 4*j:4*j+4]
+#                    block = output_np[0][_*i:_*i+_, _*j:_*j+_]
 #                    reduced[i, j] = np.mean(block)
-#            x_1 = reduced.reshape(64,1)
+#            x_1 = reduced.reshape(original_size * original_size,1)
 #            original_size = output_np[1].shape[0]
-#            new_size = original_size // 4
+#            new_size = original_size // _
 #            reduced = np.zeros((new_size, new_size), dtype=float)
 #            for i in range(new_size):
 #                for j in range(new_size):
-#                    block = output_np[1][4*i:4*i+4, 4*j:4*j+4]
+#                    block = output_np[1][_*i:_*i+_, _*j:_*j+_]
 #                    reduced[i, j] = np.mean(block)
-#            x_2 = reduced.reshape(64,1)
+#            x_2 = reduced.reshape(original_size * original_size,1)
 #            original_size = output_np[2].shape[0]
-#            new_size = original_size // 4
+#            new_size = original_size // _
 #            reduced = np.zeros((new_size, new_size), dtype=float)
 #            for i in range(new_size):
 #                for j in range(new_size):
-#                    block = output_np[2][4*i:4*i+4, 4*j:4*j+4]
+#                    block = output_np[2][_*i:_*i+_, _*j:_*j+_]
 #                    reduced[i, j] = np.mean(block)
-#            x_3 = reduced.reshape(64,1)
+#            x_3 = reduced.reshape(original_size * original_size,1)
 #            original_size = output_np[3].shape[0]
-#            new_size = original_size // 4
+#            new_size = original_size // _
 #            reduced = np.zeros((new_size, new_size), dtype=float)
 #            for i in range(new_size):
 #                for j in range(new_size):
-#                    block = output_np[3][4*i:4*i+4, 4*j:4*j+4]
+#                    block = output_np[3][_*i:_*i+_, _*j:_*j+_]
 #                    reduced[i, j] = np.mean(block)
-#            x_4 = reduced.reshape(64,1)
+#            x_4 = reduced.reshape(original_size * original_size,1)
 #            vectors = [x_0, x_1, x_2, x_3, x_4]
             def gram_schmidt(vectors, M):
                 orthogonal_basis = []
@@ -390,39 +390,21 @@ class gmsfem_preconditioner:
     def get_preconditioner_LO(self):
         return LinearOperator(self.A_mat.shape, matvec=self.apply_preconditioner)
 
+N = 
+file_path = os.path.expanduser('')
+model_path = os.path.expanduser('')
 def load_kappa_data(file_path):
     data = np.load(file_path) 
     first_key = data.files[0]
     kappas = data[first_key]
-    if kappas.ndim != 3 or kappas.shape[1:] != (512, 512):
+    if kappas.ndim != 3 or kappas.shape[1:] != (N,N):
         raise ValueError(f"wrong: {kappas.shape}")
     return np.flip(kappas[0], axis=0)
-
-N = 512
-file_path = os.path.expanduser('~/Desktop/Data_set_64x/dataset(whole kappa).npz')
-model_path = os.path.expanduser('~/Desktop/models Unet4 primitive transformation expansion (64x)/model.pth')
-# file_path = os.path.expanduser('~/Desktop/Data set(Random Ball)/dataset(whole kappa 10000x).npz')
-# model_path = os.path.expanduser('~/Desktop/models(10000x) DA.npz/model.pth')
-# file_path = os.path.expanduser('~/Desktop/Data set(Random Ball)/dataset(whole kappa 00001x).npz')
-# model_path = os.path.expanduser('~/Desktop/models(00001x) DA.npz/model.pth')
-# file_path = os.path.expanduser('~/Desktop/Data set(Random Ball)/dataset(whole kappa 1000x).npz')
-# model_path = os.path.expanduser('~/Desktop/models(1000x) DA.npz/model.pth')
-# file_path = os.path.expanduser('~/Desktop/Data set(Random Ball)/dataset(whole kappa 100x).npz')
-# model_path = os.path.expanduser('~/Desktop/models(100x) DA.npz/model.pth')
-# file_path = os.path.expanduser('~/Desktop/Data set(Random Ball)/dataset(whole kappa 10x).npz')
-# model_path = os.path.expanduser('~/Desktop/models(10x) DA.npz/model.pth')
-# file_path = os.path.expanduser('~/Desktop/Data set(Random Ball)/dataset(whole kappa 01x).npz')
-# model_path = os.path.expanduser('~/Desktop/models(01x) DA.npz/model.pth')
-# file_path = os.path.expanduser('~/Desktop/Data set(Random Ball)/dataset(whole kappa 001x).npz')
-# model_path = os.path.expanduser('~/Desktop/models(001x) DA.npz/model.pth')
-# file_path = os.path.expanduser('~/Desktop/Data set(Random Ball)/dataset(whole kappa 0001x).npz')
-# model_path = os.path.expanduser('~/Desktop/models(0001x) DA.npz/model.pth')
 kappa = load_kappa_data(file_path)
-# kappa = np.ones((N, N))
 
 
-precond_ctx = gmsfem_preconditioner(kappa, partition=64)
-precond_ctx.gmsfem_coarse_space(eigen_num=5, model_path=model_path)
+precond_ctx = gmsfem_preconditioner(kappa, partition= )
+precond_ctx.gmsfem_coarse_space(eigen_num= , model_path=model_path)
 
 # Construct the preconditioner.
 
@@ -431,17 +413,12 @@ precond_ctx.gmsfem_coarse_space(eigen_num=5, model_path=model_path)
 
 
 # RHS vector.
-
 b_vec = np.zeros((N, N))
 b_vec[0, 0] = 1
 b_vec[-1, -1] = 1
 b_vec[0, -1] = -1
 b_vec[-1, 0] = -1
 b_vec = b_vec.flatten()
-
-iter = 0
-# M = precond_ctx.get_preconditioner_LO()
-# x, info = cg(precond_ctx.A_mat, b_vec, maxiter=1000, callback=precond_ctx.iter_callback)
 
 residuals = []
 iter_count = 0
