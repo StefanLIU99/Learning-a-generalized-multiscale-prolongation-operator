@@ -99,26 +99,31 @@ class CustomLoss(nn.Module):
         super(CustomLoss, self).__init__()
 
     def forward(self, coefficients, predictions, targets):
+        batch_size, num_classes = predictions.size(0), predictions.size(1)
+
+        Weights = coefficients.view(batch_size, 1, -1) * (h**2)
+        A_batch = torch.diag_embed(Weights)
+        Weights = Weights.squeeze(1)
+        A_batch = A_batch.squeeze(1)
+
         predictions = predictions.view(batch_size, num_classes, -1)
-        sum_loss = 0
-        for i in range(batch_size):
-            orthonormal_vectors_i = []
-            v_batch = predictions[i]
-            A = torch.diag(h**2 * coefficients[i].flatten())
-            for j in range(num_classes):
-                v = v_batch[j].clone()
-                for e in orthonormal_vectors_i:
-                    v = v - torch.dot(v, torch.matmul(A, e)) * e
-                if torch.dot(v, torch.matmul(A, v)) > 0:
-                    k = torch.sqrt(torch.dot(v, torch.matmul(A, v)))
-                    v = v / k
-                    orthonormal_vectors_i.append(v)
-                else:
-                    orthonormal_vectors_i.append(v)
-            C_i = torch.stack(orthonormal_vectors_i)
-            sum_loss = sum_loss + (4 - torch.sum((torch.matmul(torch.matmul(C_i, A), targets[i])) * (torch.matmul(torch.matmul(C_i, A), targets[i])))) / 4
-        loss = sum_loss / batch_size
-        return loss
+
+        O_predictions = torch.zeros_like(predictions)
+        SO_predictions = torch.zeros_like(predictions)
+
+        for i in range(num_classes):
+            O_i = predictions[:, i, :].clone()
+            for j in range(i):
+                Co = torch.sum(predictions[:, i, :] * Weights * predictions[:, j, :], dim=-1, keepdim=True)
+                O_i = O_i - Co * predictions[:, j, :]
+            L = torch.sqrt(torch.sum(O_i * Weights * O_i, dim=-1, keepdim=True) + 1e-6)
+            SO_predictions[:, i, :] = O_i / L
+            O_predictions[:, i, :] = O_i
+
+        SO_proj = torch.matmul(torch.matmul(SO_predictions, A_batch), targets)
+        Loss = (4 * batch_size - torch.sum(SO_proj * SO_proj)) / (4 * batch_size)
+
+        return Loss
 
 custom_loss = CustomLoss()
 
